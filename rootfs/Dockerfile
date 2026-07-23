@@ -36,6 +36,7 @@ WORKDIR  /etc/nginx
 RUN apk update \
   && apk upgrade \
   && apk add --no-cache \
+    pcre2 \
     diffutils \
   && rm -rf /var/cache/apk/*
 

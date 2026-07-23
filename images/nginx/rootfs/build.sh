@@ -36,7 +36,7 @@ export NGINX_DIGEST_AUTH=v1.0.0
 export MODSECURITY_VERSION=v1.0.4
 
 # Check for recent changes: https://github.com/owasp-modsecurity/ModSecurity/compare/v3.0.14...v3/master
-export MODSECURITY_LIB_VERSION=v3.0.14
+export MODSECURITY_LIB_VERSION=v3.0.16
 
 # Check for recent changes: https://github.com/coreruleset/coreruleset/compare/v4.22.0...main
 export OWASP_MODSECURITY_CRS_VERSION=v4.22.0
@@ -142,7 +142,7 @@ apk add \
   make \
   automake \
   openssl-dev \
-  pcre-dev \
+  pcre2-dev \
   zlib-dev \
   linux-headers \
   libxslt-dev \
@@ -321,8 +321,7 @@ cd "$BUILD_PATH"
 git clone --depth=100 https://github.com/google/ngx_brotli.git
 cd ngx_brotli
 git reset --hard a71f9312c2deb28875acc7bacfdd5695a111aa53
-git submodule init
-git submodule update
+git submodule update --init --recursive
 
 cd "$BUILD_PATH"
 git clone --depth=1 https://github.com/ssdeep-project/ssdeep
@@ -339,14 +338,15 @@ cd "$BUILD_PATH"
 git clone -n https://github.com/owasp-modsecurity/ModSecurity
 cd ModSecurity/
 git checkout $MODSECURITY_LIB_VERSION
-git submodule init
-git submodule update
+git submodule update --init --recursive
 
 sh build.sh
 
 # https://github.com/owasp-modsecurity/ModSecurity/issues/1909#issuecomment-465926762
 sed -i '115i LUA_CFLAGS="${LUA_CFLAGS} -DWITH_LUA_JIT_2_1"' build/lua.m4
 sed -i '117i AC_SUBST(LUA_CFLAGS)' build/lua.m4
+sed -i '24i #include <cstdint>' headers/modsecurity/collection/collection.h
+
 
 #
 # As of Alpine v3.23.0, building ModSecurity fails with:
@@ -359,6 +359,7 @@ sed -i '117i AC_SUBST(LUA_CFLAGS)' build/lua.m4
 sed -i '24i #include <cstdint>' headers/modsecurity/collection/collection.h
 
 ./configure \
+  --with-pcre2 \
   --disable-doxygen-doc \
   --disable-doxygen-html \
   --disable-examples
