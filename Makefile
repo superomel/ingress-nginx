@@ -70,7 +70,7 @@ help:  ## Display this help
 .PHONY: image
 image: clean-image ## Build image for a particular arch.
 	echo "Building docker image ($(ARCH))..."
-	docker build \
+	docker build --network=host \
 		${PLATFORM_FLAG} ${PLATFORM} \
 		--no-cache \
 		--build-arg BASE_IMAGE="$(BASE_IMAGE)" \

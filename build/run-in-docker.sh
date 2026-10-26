@@ -92,5 +92,5 @@ else
     args="$args -v /var/run/docker.sock:/var/run/docker.sock"
   fi
 
-  ${RUNTIME} run $args ${E2E_IMAGE} ${USE_SHELL} -c "${FLAGS}"
+  ${RUNTIME} run --network=host $args ${E2E_IMAGE} ${USE_SHELL} -c "${FLAGS}"
 fi
